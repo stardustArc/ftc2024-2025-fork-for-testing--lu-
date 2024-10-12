@@ -48,7 +48,7 @@ public class IntoTheDeep_Teleop1 extends LinearOpMode{
                 seventyFive = false;
             }
             //sending values to mecanum and motors
-            mecanum.update(gamepad1.left_stick_x * 1.1, gamepad1.left_stick_y, gamepad1.right_stick_x, seventyFive, twenntyFive, gamepad1.left_bumper && gamepad1.right_bumper);
+            mecanum.update(gamepad1.left_stick_x * 1.1, gamepad1.left_stick_y, gamepad1.right_stick_x, seventyFive, twenntyFive, gamepad1.left_bumper && gamepad1.right_bumper,false,0,0,0,0);
             //motors.update(armPower, gamepad2.x);
         }
         Thread.sleep(1500);

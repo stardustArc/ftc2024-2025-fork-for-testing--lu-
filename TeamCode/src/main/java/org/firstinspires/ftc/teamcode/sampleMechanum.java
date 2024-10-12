@@ -1,12 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 //import org.firstinspires.ftc.teamcode.PIDController;
 
 
@@ -16,12 +20,21 @@ public class sampleMechanum {
     public sampleMechanum(HardwareMap map, Telemetry telem) {
         telemetry = telem;
         hardwareMap = map;
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        parameters = new BNO055IMU.Parameters();
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        parameters = new IMU.Parameters(
+                new RevHubOrientationOnRobot(
+                        RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
+                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+                )
+        );
+
+
+
     }
     private HardwareMap hardwareMap;
     private Telemetry telemetry;
-    public static Orientation angles = new Orientation();
+    public static YawPitchRollAngles angles = new YawPitchRollAngles(AngleUnit.DEGREES,0.0,0.0,0.0,10L);
     public DcMotor lF;
     public DcMotor lB;
     public DcMotor rF;
@@ -30,8 +43,14 @@ public class sampleMechanum {
     private double frontRightPower;
     private double backLeftPower;
     private double backRightPower;
-    private BNO055IMU imu;
-    private BNO055IMU.Parameters parameters;
+    private IMU imu;
+    private IMU.Parameters parameters;
+
+    static final double HD_COUNTS_PER_REV = 537;
+    static final double DRIVE_GEAR_REDUCTION = 1;
+    static final double WHEEL_CIRCUMFERENCE_MM = 96 * Math.PI;
+    static final double DRIVE_COUNTS_PER_MM = (HD_COUNTS_PER_REV * DRIVE_GEAR_REDUCTION) / WHEEL_CIRCUMFERENCE_MM;
+    static final double DRIVE_COUNTS_PER_IN = DRIVE_COUNTS_PER_MM * 25.4;
     public void begin(){
         lF = hardwareMap.dcMotor.get("front_left");
         lB = hardwareMap.dcMotor.get("back_left");
@@ -47,43 +66,82 @@ public class sampleMechanum {
         rF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
     }
-    public void update(double x, double y, double t, boolean power75, boolean power25, boolean resetOrient) {
+    public void update(double x, double y, double t, boolean power75, boolean power25, boolean resetOrient,boolean isAuto,int lFTarget,int lBTarget, int rFTarget, int rBTarget) {
         // rotation
-        x = -x;
-        t = -t;
-        angles = imu.getAngularOrientation();
-        double x_rotated = x * Math.cos(-angles.firstAngle) - y * Math.sin(-angles.firstAngle);
-        double y_rotated = x * Math.sin(-angles.firstAngle) + y * Math.cos(-angles.firstAngle);
-        telemetry.addData("angle: ",angles.firstAngle);
-        // x, y, theta input mixing
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(t), 1);
-        frontLeftPower = (y_rotated + x_rotated + t) / denominator;
-        backLeftPower = (y_rotated - x_rotated + t) / denominator;
-        frontRightPower = (y_rotated - x_rotated - t) / denominator;
-        backRightPower = (y_rotated + x_rotated - t) / denominator;
-        // Send calculated power to motors
-        if (power75) {
-            lF.setPower(frontLeftPower * 0.75);
-            rF.setPower(frontRightPower * 0.75);
-            lB.setPower(backLeftPower * 0.75);
-            rB.setPower(backRightPower * 0.75);
-        }
-        else if (power25) {
-            lF.setPower(frontLeftPower * 0.25);
-            rF.setPower(frontRightPower * 0.25);
-            lB.setPower(backLeftPower * 0.25);
-            rB.setPower(backRightPower * 0.25);
-        }
-        else {
-            lF.setPower(frontLeftPower * 0.90);
-            rF.setPower(frontRightPower * 0.90);
-            lB.setPower(backLeftPower * 0.90);
-            rB.setPower(backRightPower * 0.90);
-        }
-        // reinitialize field oriented
-        if (resetOrient) {
-            imu.initialize(parameters);
+        if(!isAuto) {
+            x = -x;
+            t = -t;
+            angles = imu.getRobotYawPitchRollAngles();
+            double x_rotated = x * Math.cos(-angles.getYaw(AngleUnit.DEGREES)) - y * Math.sin(-angles.getYaw(AngleUnit.DEGREES));
+            double y_rotated = x * Math.sin(-angles.getYaw(AngleUnit.DEGREES)) + y * Math.cos(-angles.getYaw(AngleUnit.DEGREES));
+            telemetry.addData("angle: ", angles.getYaw(AngleUnit.DEGREES));
+            // x, y, theta input mixing
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(t), 1);
+            frontLeftPower = (y_rotated + x_rotated + t) / denominator;
+            backLeftPower = (y_rotated - x_rotated + t) / denominator;
+            frontRightPower = (y_rotated - x_rotated - t) / denominator;
+            backRightPower = (y_rotated + x_rotated - t) / denominator;
+            // Send calculated power to motors
+            if (power75) {
+                lF.setPower(frontLeftPower * 0.75);
+                rF.setPower(frontRightPower * 0.75);
+                lB.setPower(backLeftPower * 0.75);
+                rB.setPower(backRightPower * 0.75);
+            } else if (power25) {
+                lF.setPower(frontLeftPower * 0.25);
+                rF.setPower(frontRightPower * 0.25);
+                lB.setPower(backLeftPower * 0.25);
+                rB.setPower(backRightPower * 0.25);
+            } else {
+                lF.setPower(frontLeftPower * 0.90);
+                rF.setPower(frontRightPower * 0.90);
+                lB.setPower(backLeftPower * 0.90);
+                rB.setPower(backRightPower * 0.90);
+            }
+            // reinitialize field oriented
+            if (resetOrient) {
+                imu.initialize(parameters);
+            }
+        }else{
+
+            int rightTarget;
+            int leftTarget;
+            int rightFrontTarget;
+            int leftBackTarget;
+
+            rightTarget = rB.getCurrentPosition() + (int)(rBTarget * DRIVE_COUNTS_PER_IN);
+            leftTarget = lF.getCurrentPosition() + (int)(lFTarget * DRIVE_COUNTS_PER_IN);
+            rightFrontTarget = rF.getCurrentPosition() + (int)(rFTarget * DRIVE_COUNTS_PER_IN);
+            leftBackTarget = lB.getCurrentPosition() + (int)(lBTarget*DRIVE_COUNTS_PER_IN);
+            lF.setTargetPosition(leftTarget);
+            rB.setTargetPosition(rightTarget);
+            lB.setTargetPosition(leftBackTarget);
+            rF.setTargetPosition(rightFrontTarget);
+
+            //switch to run to position mode
+            lF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            //run to position at the desiginated power
+            lF.setPower(0.7);
+            rB.setPower(0.7);
+            lB.setPower(0.7);
+            rF.setPower(0.7);
+
+            // wait until both motors are no longer busy running to position
+            while ((lF.isBusy() || rB.isBusy()||rF.isBusy()||lB.isBusy())) {
+            }
+
+            // set motor power back to 0
+            lF.setPower(0);
+            rB.setPower(0);
+            lB.setPower(0);
+            rF.setPower(0);
         }
     }
 }

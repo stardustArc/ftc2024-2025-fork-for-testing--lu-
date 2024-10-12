@@ -9,7 +9,7 @@ public class sampleMotors {
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
     public DcMotorEx arm;
-
+    public Servo intakeServo;
 
 
     boolean armlockPosition = false;
