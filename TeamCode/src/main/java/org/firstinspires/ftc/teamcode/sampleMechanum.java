@@ -24,7 +24,7 @@ public class sampleMechanum {
 
         parameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
+                        RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
                         RevHubOrientationOnRobot.UsbFacingDirection.LEFT
                 )
         );
@@ -75,9 +75,14 @@ public class sampleMechanum {
             x = -x;
             t = -t;
             angles = imu.getRobotYawPitchRollAngles();
+            double yaw = angles.getYaw(AngleUnit.DEGREES);
+            double roll = angles.getRoll(AngleUnit.DEGREES);
+            double pitch = angles.getPitch(AngleUnit.DEGREES);
             double x_rotated = x * Math.cos(-angles.getYaw(AngleUnit.DEGREES)) - y * Math.sin(-angles.getYaw(AngleUnit.DEGREES));
             double y_rotated = x * Math.sin(-angles.getYaw(AngleUnit.DEGREES)) + y * Math.cos(-angles.getYaw(AngleUnit.DEGREES));
-            telemetry.addData("angle: ", angles.getYaw(AngleUnit.DEGREES));
+            telemetry.addData(" roll angle: ", roll);
+            telemetry.addData(" pitch angle: ", pitch);
+            telemetry.addData(" yaw angle: ", yaw);
             // x, y, theta input mixing
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(t), 1);
             frontLeftPower = (y_rotated + x_rotated + t) / denominator;
