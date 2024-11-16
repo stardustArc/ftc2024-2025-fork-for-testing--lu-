@@ -43,6 +43,7 @@ public class sampleMechanum {
     private double frontRightPower;
     private double backLeftPower;
     private double backRightPower;
+    boolean isRunning =true;
     private IMU imu;
     private IMU.Parameters parameters;
 
@@ -51,7 +52,7 @@ public class sampleMechanum {
     static final double WHEEL_CIRCUMFERENCE_MM = 96 * Math.PI;
     static final double DRIVE_COUNTS_PER_MM = (HD_COUNTS_PER_REV * DRIVE_GEAR_REDUCTION) / WHEEL_CIRCUMFERENCE_MM;
     static final double DRIVE_COUNTS_PER_IN = DRIVE_COUNTS_PER_MM * 25.4;
-    public void begin(){
+    public void begin(){                                                                                                                                                                                                                                                                                                                                                                                                
         lF = hardwareMap.dcMotor.get("front_left");
         lB = hardwareMap.dcMotor.get("back_left");
         rF = hardwareMap.dcMotor.get("front_right");
@@ -69,17 +70,18 @@ public class sampleMechanum {
 
 
     }
-    public void update(double x, double y, double t, boolean power75, boolean power25, boolean resetOrient,boolean isAuto,int lFTarget,int lBTarget, int rFTarget, int rBTarget) {
+    public void update(double x, double y, double t, boolean power75, boolean power25, boolean resetOrient,boolean isAuto,int lFTarget,int lBTarget, int rFTarget, int rBTarget,Directions directions) {
         // rotation
         if(!isAuto) {
-            x = -x;
-            t = -t;
+            y= y;
+            x=-x;
+            t = t;
             angles = imu.getRobotYawPitchRollAngles();
-            double yaw = angles.getYaw(AngleUnit.DEGREES);
-            double roll = angles.getRoll(AngleUnit.DEGREES);
-            double pitch = angles.getPitch(AngleUnit.DEGREES);
-            double x_rotated = x * Math.cos(-angles.getYaw(AngleUnit.DEGREES)) - y * Math.sin(-angles.getYaw(AngleUnit.DEGREES));
-            double y_rotated = x * Math.sin(-angles.getYaw(AngleUnit.DEGREES)) + y * Math.cos(-angles.getYaw(AngleUnit.DEGREES));
+            double yaw = angles.getYaw(AngleUnit.RADIANS);
+            double roll = angles.getRoll(AngleUnit.RADIANS);
+            double pitch = angles.getPitch(AngleUnit.RADIANS);
+            double x_rotated = x * Math.cos(-angles.getYaw(AngleUnit.RADIANS)) - y * Math.sin(angles.getYaw(AngleUnit.RADIANS));
+            double y_rotated = x * Math.sin(-angles.getYaw(AngleUnit.RADIANS)) + y * Math.cos(angles.getYaw(AngleUnit.RADIANS));
             telemetry.addData(" roll angle: ", roll);
             telemetry.addData(" pitch angle: ", pitch);
             telemetry.addData(" yaw angle: ", yaw);
@@ -112,41 +114,62 @@ public class sampleMechanum {
             }
         }else{
 
-            int rightTarget;
-            int leftTarget;
-            int rightFrontTarget;
-            int leftBackTarget;
+                int rightTarget = 0;
+                int leftTarget = 0;
+                int rightFrontTarget = 0;
+                int leftBackTarget = 0;
+                //go forwards
+                if (directions.operation==0) {
+                    rightTarget = rB.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    leftTarget = lF.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    rightFrontTarget = rF.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    leftBackTarget = lB.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    //go bacjwars
+                } else if (directions.operation == 1){
+                    rightTarget = rB.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    leftTarget = lF.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    rightFrontTarget = rF.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    leftBackTarget = lB.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    //go sideways
+                } else if (directions.operation ==2){
+                    rightTarget = rB.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    leftTarget = lF.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    rightFrontTarget = rF.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    leftBackTarget = lB.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    //Go siedways
+                } else if (directions.operation == 3){
+                    rightTarget = rB.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    leftTarget = lF.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    rightFrontTarget = rF.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    leftBackTarget = lB.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                }
+                lF.setTargetPosition(leftTarget);
+                rB.setTargetPosition(rightTarget);
+                lB.setTargetPosition(leftBackTarget);
+                rF.setTargetPosition(rightFrontTarget);
+                //switch to run to position mode
+                lF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                rB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                rF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            rightTarget = rB.getCurrentPosition() + (int)(rBTarget * DRIVE_COUNTS_PER_IN);
-            leftTarget = lF.getCurrentPosition() + (int)(lFTarget * DRIVE_COUNTS_PER_IN);
-            rightFrontTarget = rF.getCurrentPosition() + (int)(rFTarget * DRIVE_COUNTS_PER_IN);
-            leftBackTarget = lB.getCurrentPosition() + (int)(lBTarget*DRIVE_COUNTS_PER_IN);
-            lF.setTargetPosition(leftTarget);
-            rB.setTargetPosition(rightTarget);
-            lB.setTargetPosition(leftBackTarget);
-            rF.setTargetPosition(rightFrontTarget);
+                //run to position at the desiginated power
+                lF.setPower(0.5);
+                rB.setPower(0.5);
+                lB.setPower(0.5);
+                rF.setPower(0.5);
 
-            //switch to run to position mode
-            lF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            lB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                // wait until both motors are no longer busy running to position
+                while ((lF.isBusy() || rB.isBusy() || rF.isBusy() || lB.isBusy())) {
+                }
 
-            //run to position at the desiginated power
-            lF.setPower(0.7);
-            rB.setPower(0.7);
-            lB.setPower(0.7);
-            rF.setPower(0.7);
+                // set motor power back to 0
+                lF.setPower(0);
+                rB.setPower(0);
+                lB.setPower(0);
+                rF.setPower(0);
 
-            // wait until both motors are no longer busy running to position
-            while ((lF.isBusy() || rB.isBusy()||rF.isBusy()||lB.isBusy())) {
-            }
 
-            // set motor power back to 0
-            lF.setPower(0);
-            rB.setPower(0);
-            lB.setPower(0);
-            rF.setPower(0);
         }
     }
 }

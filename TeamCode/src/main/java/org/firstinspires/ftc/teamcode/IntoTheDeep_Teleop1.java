@@ -15,6 +15,7 @@ public class IntoTheDeep_Teleop1 extends LinearOpMode{
 
     private boolean twenntyFive = false;
     private boolean seventyFive = false;
+    private Directions fake = new Directions();
 
 
     @Override
@@ -48,8 +49,8 @@ public class IntoTheDeep_Teleop1 extends LinearOpMode{
                 seventyFive = false;
             }
             //sending values to mecanum and motors
-            mecanum.update(gamepad1.left_stick_x * 1.1, gamepad1.left_stick_y, gamepad1.right_stick_x, seventyFive, twenntyFive, gamepad1.left_bumper && gamepad1.right_bumper,false,0,0,0,0);
-            //motors.update(armPower, gamepad2.x);
+            mecanum.update(gamepad1.left_stick_x*1.1, gamepad1.left_stick_y, gamepad1.right_stick_x, seventyFive, twenntyFive, gamepad1.left_bumper && gamepad1.right_bumper,false,0,0,0,0,fake);
+            motors.update(gamepad1.a, false,false);
         }
         Thread.sleep(1500);
     }
