@@ -77,9 +77,9 @@ public class sampleMechanum {
             x=-x;
             t = t;
             angles = imu.getRobotYawPitchRollAngles();
-            double yaw = angles.getYaw(AngleUnit.RADIANS);
-            double roll = angles.getRoll(AngleUnit.RADIANS);
-            double pitch = angles.getPitch(AngleUnit.RADIANS);
+            double yaw = angles.getYaw(AngleUnit.RADIANS) - (Math.PI/2);
+            double roll = angles.getRoll(AngleUnit.RADIANS) - (Math.PI/2);
+            double pitch = angles.getPitch(AngleUnit.RADIANS) - (Math.PI/2);
             double x_rotated = x * Math.cos(-angles.getYaw(AngleUnit.RADIANS)) - y * Math.sin(angles.getYaw(AngleUnit.RADIANS));
             double y_rotated = x * Math.sin(-angles.getYaw(AngleUnit.RADIANS)) + y * Math.cos(angles.getYaw(AngleUnit.RADIANS));
             telemetry.addData(" roll angle: ", roll);
@@ -142,6 +142,16 @@ public class sampleMechanum {
                     leftTarget = lF.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
                     rightFrontTarget = rF.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
                     leftBackTarget = lB.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                }else if (directions.operation == 4){
+                    rightTarget = rB.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    leftTarget = lF.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    rightFrontTarget = rF.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    leftBackTarget = lB.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                }else if (directions.operation ==5){
+                    rightTarget = rB.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    leftTarget = lF.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    rightFrontTarget = rF.getCurrentPosition() - (int) (directions.inches * DRIVE_COUNTS_PER_IN);
+                    leftBackTarget = lB.getCurrentPosition() + (int) (directions.inches * DRIVE_COUNTS_PER_IN);
                 }
                 lF.setTargetPosition(leftTarget);
                 rB.setTargetPosition(rightTarget);
