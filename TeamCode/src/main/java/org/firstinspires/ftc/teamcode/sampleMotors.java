@@ -24,7 +24,7 @@ public class sampleMotors {
     boolean intakePos = false;
     public Servo armlock;
 
-
+    public double pulsesPerRev0019 = 537.7;
 
     private int elbowTimerStart = 50;
 
@@ -43,25 +43,29 @@ public class sampleMotors {
 
     public void begin () {
         //This is where the servos and motors are and commands for them
-        intakeServo = hardwareMap.servo.get("intakeServo");
+        intakeServo = hardwareMap.servo.get("intakeServo");//113 degrees
         intakeServo.setPosition(0.0);
-        testMotor = (DcMotorEx) hardwareMap.dcMotor.get("testMotor");
+        //testMotor = (DcMotorEx) hardwareMap.dcMotor.get("testMotor");
         armMotor1 = hardwareMap.dcMotor.get("armMotor1");
         armMotor2 = hardwareMap.dcMotor.get("armMotor2");
         testMotor.setPower(0.0);
         testServo = hardwareMap.servo.get("testServo");
+        armMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
 
     }
 
-    public void update (boolean intakeOn,boolean testMotorOn,boolean testServoOn,) {
+    public void update (boolean intakeOn,boolean testMotorOn,boolean testServoOn,double infiniteArmMotorPower,double limitedArmMotorPower) {
 
         if(intakeOn && !prevIntakeOn){
                 intakePos = !intakePos;
         }
         if (intakePos){
-                intakeServo.setPosition(0.694);
+                intakeServo.setPosition(0.628);
         } else {intakeServo.setPosition(0.0);}
         if (testServoOn) {
             testServo.setDirection(Servo.Direction.FORWARD);
@@ -70,6 +74,12 @@ public class sampleMotors {
             testMotor.setDirection(DcMotorSimple.Direction.FORWARD);
             testMotor.setPower(1);
             //testMotor.setVelocity(1);
+
+        }
+        armMotor1.setPower(infiniteArmMotorPower);
+        double limit = pulsesPerRev0019 *4.2;
+        if(armMotor2.getCurrentPosition() <= limit && armMotor2.getCurrentPosition() >= 0){
+            armMotor2.setPower(limitedArmMotorPower);
 
         }
 

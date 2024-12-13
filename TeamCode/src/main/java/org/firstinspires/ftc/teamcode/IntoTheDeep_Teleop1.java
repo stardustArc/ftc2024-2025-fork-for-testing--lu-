@@ -15,7 +15,7 @@ public class IntoTheDeep_Teleop1 extends LinearOpMode{
 
     private boolean twenntyFive = false;
     private boolean seventyFive = false;
-    private Directions fake = new Directions();
+    private Directions fake = new Directions(0,0);
 
 
     @Override
@@ -23,9 +23,9 @@ public class IntoTheDeep_Teleop1 extends LinearOpMode{
     public void runOpMode() throws InterruptedException {
         //instantiating mecanum and motor libraries/maps
         mecanum = new sampleMechanum(hardwareMap, telemetry);
-        //motors = new sampleMotors(hardwareMap, telemetry);
+        motors = new sampleMotors(hardwareMap, telemetry);
         mecanum.begin();
-        //motors.begin();
+        motors.begin();
         waitForStart();
         //where most of the code goes. this runs on a loop while the opmode is active
         while (opModeIsActive()) {
@@ -48,9 +48,10 @@ public class IntoTheDeep_Teleop1 extends LinearOpMode{
             }else{
                 seventyFive = false;
             }
+
             //sending values to mecanum and motors
             mecanum.update(gamepad1.left_stick_x*1.1, gamepad1.left_stick_y, gamepad1.right_stick_x, seventyFive, twenntyFive, gamepad1.left_bumper && gamepad1.right_bumper,false,0,0,0,0,fake);
-            motors.update(gamepad1.a, false,false);
+            motors.update(gamepad1.a, false,false,gamepad2.left_stick_y);
         }
         Thread.sleep(1500);
     }
