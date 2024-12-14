@@ -2,17 +2,26 @@ package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
 
+enum Operation {
+    FORWARD,
+    BACKWARD,
+    RIGHT,
+    LEFT,
+    CLOCKWISE,
+    COUNTERCLOCKWISE
+}
+
 public class Directions {
-    int operation;
+    Operation operation;
 
     int inches;
 
-    Directions(int operation, int inches) {
+    Directions(Operation operation, int inches) {
         this.operation = operation;
         this.inches = inches;
     }
 
-    public void setOperation(int o) {
+    public void setOperation(Operation o) {
         this.operation = o;
 
     }
@@ -21,7 +30,7 @@ public class Directions {
         this.inches = i;
     }
 
-    public int getOperation() {
+    public Operation getOperation() {
         return this.operation;
     }
 
@@ -31,22 +40,9 @@ public class Directions {
     @NonNull
 
     private String numToOp(){
-        if (this.operation==0){
-            return("forward");
-        }else if (this.operation == 1){
-            return("backwards");
-        }else if (this.operation == 2){
-            return("left?");
-        }else if (this.operation == 3){
-            return("right?");
-        }else if (this.operation == 4){
-            return("clockwise?");
-        }else if (this.operation == 5){
-            return("counterclockwise?");
-        }else{
-            return("ERROR");
-        }
+        return this.operation.name();
     }
+
     @NonNull
     @Override
     public String toString() {

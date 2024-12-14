@@ -13,8 +13,8 @@ public class IntoTheDeep_Auto1 extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         mecanum = new sampleMechanum(hardwareMap, telemetry);
         mecanum.begin();
-        Directions forward = new Directions(3,5);
-        Directions backward = new Directions(1,5);
+        Directions forward = new Directions(Operation.FORWARD,5);
+        Directions backward = new Directions(Operation.RIGHT,5);
 
 
 

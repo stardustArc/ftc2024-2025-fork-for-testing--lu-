@@ -146,58 +146,51 @@ public class sampleMechanum {
         }else{
                 double inchesToTicks = directions.inches*2000;
 
-                //go forwards
-                if (directions.operation==0) {
-                    rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
-                    leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
-                    rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
-                    leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-                    rightBack.setPower(0.5);
-                    rightFront.setPower(0.5);
-                    leftBack.setPower(0.5);
-                    leftFront.setPower(0.5);
-                    currentDeadWheel = par;
 
+                double lfPower = 0.5;
+                double rfPower = 0.5;
+                double lbPower = 0.5;
+                double rbPower = 0.5;
+                switch (directions.operation){
+                    case FORWARD:
+                        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+                        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+                        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+                        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+                        currentDeadWheel = par;
+                    case BACKWARD:
+                        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+                        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+                        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+                        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+                        currentDeadWheel = par;
 
-                } else if (directions.operation == 1){
-                    rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-                    leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-                    rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-                    leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-                    rightBack.setPower(0.5);
-                    rightFront.setPower(0.5);
-                    leftBack.setPower(0.5);
-                    leftFront.setPower(0.5);
-                    currentDeadWheel = par;
+                    case RIGHT:
+                        //right
+                        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+                        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+                        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+                        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+                        currentDeadWheel = perp;
 
-                } else if (directions.operation ==2){
-                    //right
-                    rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
-                    leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-                    rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-                    leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-                    rightBack.setPower(0.5);
-                    rightFront.setPower(0.5);
-                    leftBack.setPower(0.5);
-                    leftFront.setPower(0.5);
-                    currentDeadWheel = perp;
+                    case LEFT:
+                        //left
+                        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+                        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+                        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+                        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+                        currentDeadWheel = perp;
+                    case CLOCKWISE:
+                        //figure out turning later
 
-                } else if (directions.operation == 3){
-                    //left
-                    rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-                    leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
-                    rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
-                    leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-                    rightBack.setPower(0.5);
-                    rightFront.setPower(0.5);
-                    leftBack.setPower(0.5);
-                    leftFront.setPower(0.5);
-                    currentDeadWheel = perp;
-                }else if (directions.operation == 4){
-                    //figure out turing later
-                }else if (directions.operation ==5){
-                    //figure out turning later
+                    case COUNTERCLOCKWISE:
+                        //figure out turning later
                 }
+
+                rightBack.setPower(rbPower);
+                rightFront.setPower(rfPower);
+                leftBack.setPower(lbPower);
+                leftFront.setPower(lfPower);
 
                 while (currentDeadWheel.getCurrentPosition()<=inchesToTicks){
 

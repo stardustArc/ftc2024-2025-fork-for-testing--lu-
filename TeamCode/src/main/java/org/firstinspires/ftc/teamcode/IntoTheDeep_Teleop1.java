@@ -12,10 +12,10 @@ public class IntoTheDeep_Teleop1 extends LinearOpMode{
     private sampleMechanum mecanum;
     private sampleMotors motors;
     //declaring variables
-
+    private double test;
     private boolean twenntyFive = false;
     private boolean seventyFive = false;
-    private Directions fake = new Directions(0,0);
+    private Directions fake = new Directions(Operation.FORWARD,0);
 
 
     @Override
@@ -48,10 +48,15 @@ public class IntoTheDeep_Teleop1 extends LinearOpMode{
             }else{
                 seventyFive = false;
             }
+            if (gamepad2.left_trigger>gamepad2.right_trigger){
+                test = -gamepad2.left_trigger;
+            }else if (gamepad2.right_trigger>gamepad2.left_trigger){
+                test = gamepad2.right_trigger;
+            }
 
             //sending values to mecanum and motors
             mecanum.update(gamepad1.left_stick_x*1.1, gamepad1.left_stick_y, gamepad1.right_stick_x, seventyFive, twenntyFive, gamepad1.left_bumper && gamepad1.right_bumper,false,0,0,0,0,fake);
-            motors.update(gamepad1.a, false,false,gamepad2.left_stick_y);
+            motors.update(gamepad1.a, false,false,gamepad2.left_stick_y,gamepad2.right_stick_y,test);
         }
         Thread.sleep(1500);
     }

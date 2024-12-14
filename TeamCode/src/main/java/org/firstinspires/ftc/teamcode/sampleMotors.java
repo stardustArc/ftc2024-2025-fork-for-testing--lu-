@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -11,6 +12,7 @@ public class sampleMotors {
     public Telemetry telemetry;
     public DcMotorEx arm;
     public Servo intakeServo;
+    public CRServo intakeServo2;
     public DcMotor armMotor1;
     public DcMotor armMotor2;
     public Servo testServo;
@@ -45,7 +47,8 @@ public class sampleMotors {
         //This is where the servos and motors are and commands for them
         intakeServo = hardwareMap.servo.get("intakeServo");//113 degrees
         intakeServo.setPosition(0.0);
-        //testMotor = (DcMotorEx) hardwareMap.dcMotor.get("testMotor");
+        intakeServo2 = hardwareMap.crservo.get("intakeServo2");
+        testMotor = (DcMotorEx) hardwareMap.dcMotor.get("perp");
         armMotor1 = hardwareMap.dcMotor.get("armMotor1");
         armMotor2 = hardwareMap.dcMotor.get("armMotor2");
         testMotor.setPower(0.0);
@@ -59,16 +62,21 @@ public class sampleMotors {
 
     }
 
-    public void update (boolean intakeOn,boolean testMotorOn,boolean testServoOn,double infiniteArmMotorPower,double limitedArmMotorPower) {
+    public void update (boolean intakeOn,boolean testMotorOn,boolean testServoOn,double infiniteArmMotorPower,double limitedArmMotorPower,double intakeMovingServo) {
 
         if(intakeOn && !prevIntakeOn){
                 intakePos = !intakePos;
         }
         if (intakePos){
-                intakeServo.setPosition(0.628);
+            //intakeServo.setPosition(0.628);
+            intakeServo.setPosition(0.1);
+
         } else {intakeServo.setPosition(0.0);}
+        telemetry.addData("position",intakeServo.getPosition());
+
         if (testServoOn) {
             testServo.setDirection(Servo.Direction.FORWARD);
+
         }
         if (testMotorOn){
             testMotor.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -76,12 +84,22 @@ public class sampleMotors {
             //testMotor.setVelocity(1);
 
         }
-        armMotor1.setPower(infiniteArmMotorPower);
-        double limit = pulsesPerRev0019 *4.2;
-        if(armMotor2.getCurrentPosition() <= limit && armMotor2.getCurrentPosition() >= 0){
-            armMotor2.setPower(limitedArmMotorPower);
+        armMotor1.setPower(infiniteArmMotorPower/2);
+        double limit = pulsesPerRev0019 *4;//origional: 4.2
+        if(
+                (armMotor2.getCurrentPosition()<limit && armMotor2.getCurrentPosition() >0) ||
+                        ((armMotor2.getCurrentPosition() >= limit && limitedArmMotorPower>=0) ||
+                                (armMotor2.getCurrentPosition() <= 0 && limitedArmMotorPower <= 0))){
+            armMotor2.setPower(limitedArmMotorPower/2);
 
         }
+        telemetry.addData("armMotor2",armMotor2.getCurrentPosition());
+        telemetry.addData("revs",armMotor2.getCurrentPosition()/pulsesPerRev0019);
+        telemetry.addData("limit",limit);
+        telemetry.addData("input",limitedArmMotorPower);
+
+        intakeServo2.setPower(intakeMovingServo);
+
 
 
 
