@@ -38,12 +38,12 @@ public class IntoTheDeep_Teleop1 extends LinearOpMode{
             //    armPower = gamepad2.right_trigger * -1;
             //}
             //setting 75/25% speeds
-            if(gamepad1.left_trigger != 0){
+            if(gamepad1.left_bumper){
                 twenntyFive = true;
             }else{
                 twenntyFive = false;
             }
-            if(gamepad1.right_trigger != 0){
+            if(gamepad1.right_bumper){
                 seventyFive = true;
             }else{
                 seventyFive = false;
@@ -56,7 +56,7 @@ public class IntoTheDeep_Teleop1 extends LinearOpMode{
 
             //sending values to mecanum and motors
             mecanum.update(gamepad1.left_stick_x*1.1, gamepad1.left_stick_y, gamepad1.right_stick_x, seventyFive, twenntyFive, gamepad1.left_bumper && gamepad1.right_bumper,false,0,0,0,0,fake);
-            motors.update(gamepad1.a, false,false,gamepad2.left_stick_y,gamepad2.right_stick_y,test);
+            motors.update(gamepad2.a, false,false,gamepad2.left_stick_y,gamepad2.right_stick_y,test,gamepad2.x);
         }
         Thread.sleep(1500);
     }

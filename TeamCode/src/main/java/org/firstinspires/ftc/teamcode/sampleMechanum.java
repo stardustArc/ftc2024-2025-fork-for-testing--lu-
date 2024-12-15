@@ -93,15 +93,16 @@ public class sampleMechanum {
             y= y;
             x=x;
 
-            t = t;
+            t = -t;
             angles = imu.getRobotYawPitchRollAngles();
             double yaw = angles.getYaw(AngleUnit.RADIANS);
             double roll = angles.getRoll(AngleUnit.RADIANS);
             double pitch = angles.getPitch(AngleUnit.RADIANS);
             //double x_rotated = x * Math.cos(angles.getYaw(AngleUnit.RADIANS)) + y * Math.sin(-angles.getYaw(AngleUnit.RADIANS));
             //double y_rotated = x * Math.sin(-angles.getYaw(AngleUnit.RADIANS)) - y * Math.cos(angles.getYaw(AngleUnit.RADIANS));
-            double x_rotated = x;
+            double x_rotated = -x;
             double y_rotated = y;
+
 
             telemetry.addData(" roll angle: ", roll);
             telemetry.addData(" pitch angle: ", pitch);
@@ -144,14 +145,18 @@ public class sampleMechanum {
                 imu.initialize(parameters);
             }
         }else{
-                double inchesToTicks = directions.inches*2000;
+               double inchesToTicks = directions.inches*2000;//3.957913386 in per rev
 
 
                 double lfPower = 0.5;
-                double rfPower = 0.5;
-                double lbPower = 0.5;
+                double rfPower = -0.5;
+                double lbPower = -0.5;
                 double rbPower = 0.5;
-                switch (directions.operation){
+            rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+            leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+            leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+              /*  switch (directions.operation){
                     case FORWARD:
                         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
                         leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -185,16 +190,16 @@ public class sampleMechanum {
 
                     case COUNTERCLOCKWISE:
                         //figure out turning later
-                }
+                }*/
 
                 rightBack.setPower(rbPower);
                 rightFront.setPower(rfPower);
                 leftBack.setPower(lbPower);
                 leftFront.setPower(lfPower);
 
-                while (currentDeadWheel.getCurrentPosition()<=inchesToTicks){
+                //while (currentDeadWheel.getCurrentPosition()<=inchesToTicks){
 
-                }
+                //}
 
 
                 // set motor power back to 0

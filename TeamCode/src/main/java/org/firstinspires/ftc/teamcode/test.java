@@ -22,7 +22,7 @@ public class test extends LinearOpMode{
         while (opModeIsActive()) {
             runMotor = gamepad1.a;
             runServo = gamepad1.b;
-            motors.update(gamepad1.a, runMotor,runServo,1,1,1);
+            motors.update(gamepad1.a, runMotor,runServo,1.0,1.0,1.0,false);
 
         }
         //sending values to mecanum and motors
