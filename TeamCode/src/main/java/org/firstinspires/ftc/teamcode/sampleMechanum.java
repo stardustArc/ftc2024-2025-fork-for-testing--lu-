@@ -1,16 +1,16 @@
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.hardware.bosch.BNO055IMU;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 import java.util.Base64;
@@ -64,8 +64,8 @@ public class sampleMechanum {
         leftBack = hardwareMap.dcMotor.get("back_left");
         rightFront = hardwareMap.dcMotor.get("front_right");
         rightBack = hardwareMap.dcMotor.get("back_right");
-        par = hardwareMap.dcMotor.get("par");
-        perp = hardwareMap.dcMotor.get("perp");
+        //par = hardwareMap.dcMotor.get("front_left");
+        //perp = hardwareMap.dcMotor.get("front_left");
         imu.initialize(parameters);
         telemetry.addData("Status", "Initialized");
         leftFront.setDirection(DcMotor.Direction.FORWARD);

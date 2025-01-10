@@ -6,11 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
 
+
 @TeleOp(group = "IN_TO_THE_DEEP")
 public class IntoTheDeep_Teleop1 extends LinearOpMode{
     //instantiating mecanum and motor libraries/maps
-    private sampleMechanum mecanum;
+    private newMecanum mecanum;
     private sampleMotors motors;
+    private sampleMotors2 motors2;
     //declaring variables
     private double test;
     private boolean twenntyFive = false;
@@ -22,22 +24,17 @@ public class IntoTheDeep_Teleop1 extends LinearOpMode{
     //where all the code goes
     public void runOpMode() throws InterruptedException {
         //instantiating mecanum and motor libraries/maps
-        mecanum = new sampleMechanum(hardwareMap, telemetry);
+        mecanum = new newMecanum(hardwareMap, telemetry);
         motors = new sampleMotors(hardwareMap, telemetry);
+        motors2 = new sampleMotors2(hardwareMap,telemetry);
+
         mecanum.begin();
-        motors.begin();
+        //motors.begin();
+        motors2.begin();
         waitForStart();
         //where most of the code goes. this runs on a loop while the opmode is active
         while (opModeIsActive()) {
-            //code to set values
-            //setting arm power based on triggers
-            //float armPower = 0;
-            //if (gamepad2.left_trigger > 0) {
-            //    armPower = gamepad2.left_trigger;
-            //} else if (gamepad2.right_trigger > 0) {
-            //    armPower = gamepad2.right_trigger * -1;
-            //}
-            //setting 75/25% speeds
+            //set values for motors
             if(gamepad1.left_bumper){
                 twenntyFive = true;
             }else{
@@ -55,8 +52,9 @@ public class IntoTheDeep_Teleop1 extends LinearOpMode{
             }
 
             //sending values to mecanum and motors
-            mecanum.update(gamepad1.left_stick_x*1.1, gamepad1.left_stick_y, gamepad1.right_stick_x, seventyFive, twenntyFive, gamepad1.left_bumper && gamepad1.right_bumper,false,0,0,0,0,fake);
-            motors.update(gamepad2.a, false,false,gamepad2.left_stick_y,gamepad2.right_stick_y,test,gamepad2.x);
+            mecanum.updateBotOriented(gamepad1.left_stick_x,gamepad1.left_stick_y,gamepad1.right_stick_x);
+            //motors.update(gamepad2.a, false,false,gamepad2.left_stick_y,gamepad2.right_stick_y,test,gamepad2.x);
+            motors2.update(gamepad2.left_stick_x, gamepad2.a,gamepad2.right_stick_y,gamepad2.b,gamepad2.x,gamepad2.y,gamepad2.left_bumper);
         }
         Thread.sleep(1500);
     }
