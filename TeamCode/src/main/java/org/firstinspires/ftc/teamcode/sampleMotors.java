@@ -44,7 +44,7 @@ public class sampleMotors {
         intakeServo = hardwareMap.servo.get("intakeServo");//113 degrees
         intakeServo.setPosition(0.0);
         intakeServo2 = hardwareMap.crservo.get("intakeServo2");
-        testMotor = (DcMotorEx) hardwareMap.dcMotor.get("perp");
+        testMotor = (DcMotorEx) hardwareMap.dcMotor.get("perp") ;
         armMotor1 = hardwareMap.dcMotor.get("armMotor1");
         armMotor2 = hardwareMap.dcMotor.get("armMotor2");
         testMotor.setPower(0.0);
