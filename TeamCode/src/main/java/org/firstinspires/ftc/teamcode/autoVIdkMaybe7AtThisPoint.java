@@ -56,10 +56,10 @@ public class autoVIdkMaybe7AtThisPoint extends LinearOpMode {
         telemetry.addLine("ENTERING BACKWARDS");
 
         while(par.getCurrentPosition() > targetPos){
-            leftFront.setPower(-0.9);
-            rightFront.setPower(0.9);
-            leftBack.setPower(-0.9);
-            rightBack.setPower(0.9);
+            leftFront.setPower(0.9);
+            rightFront.setPower(-0.9);
+            leftBack.setPower(0.9);
+            rightBack.setPower(-0.9);
             telemetry.addData("target", (targetPos));
             telemetry.addData("current",par.getCurrentPosition());
             TimeUnit.MILLISECONDS.sleep(250);
@@ -96,15 +96,15 @@ public class autoVIdkMaybe7AtThisPoint extends LinearOpMode {
     }
     void right(double length) throws InterruptedException {
         //tune encoder Direction
-        double targetPos = perp.getCurrentPosition() - length;
+        double targetPos = perp.getCurrentPosition() + length;
         telemetry.addLine("NOW ENTERING RIGHT!!");
 
 
-        while(perp.getCurrentPosition() > targetPos){
-            leftFront.setPower(-0.9);
-            rightFront.setPower(-0.9);
-            leftBack.setPower(0.9);
-            rightBack.setPower(0.9);
+        while(perp.getCurrentPosition() < targetPos){
+            leftFront.setPower(-1);
+            rightFront.setPower(-1);
+            leftBack.setPower(1);
+            rightBack.setPower(1);
             telemetry.addData("target", (targetPos));
             telemetry.addData("current",par.getCurrentPosition());
             TimeUnit.MILLISECONDS.sleep(250);
@@ -129,7 +129,7 @@ public class autoVIdkMaybe7AtThisPoint extends LinearOpMode {
         rightFront.setPower(0.9);
         leftBack.setPower(0.9);
 
-        while(perp.getCurrentPosition() < targetPos){
+        while(perp.getCurrentPosition() > targetPos){
 
         }
         leftFront.setPower(0);
@@ -288,9 +288,9 @@ public class autoVIdkMaybe7AtThisPoint extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()){
             forward(50);
-            backwards(500);
-            right(500);
-            left(500);
+            backwards(50);
+            right(50);
+            left(50);
             terminateOpModeNow();
 
 

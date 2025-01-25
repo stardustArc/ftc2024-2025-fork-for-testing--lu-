@@ -50,7 +50,8 @@ public class newMecanum {
     double frontRightPower;
     double backLeftPower;
     double backRightPower;
-
+boolean prevWheelDebug = false;
+int wheelState = 1;
     private IMU imu;
     private IMU.Parameters parameters;
 
@@ -90,12 +91,24 @@ public class newMecanum {
         frontRightPower = (y - x - rx) / denominator;
         backRightPower = (y + x - rx) / denominator;
     }
-    public void updateBotOriented(double X, double Y, double RX){
-        sharedMecanum(X,Y,RX);
-        leftFront.setPower(frontLeftPower);
-        leftBack.setPower(backLeftPower);
-        rightFront.setPower(frontRightPower);
-        rightBack.setPower(backRightPower);
+    public void updateBotOriented(double X, double Y, double RX,boolean wheelDebug){
+
+        double y = -Y; // Remember, Y stick value is reversed
+        double x = X * 1.1; // Counteract imperfect strafing
+        double rx = RX;
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        frontLeftPower = ((y + x + rx) / denominator)*0.2;
+        backLeftPower = ((y - x + rx) / denominator) *0.2;
+        frontRightPower = ((y - x - rx) / denominator) *0.2;
+        backRightPower = ((y + x - rx) / denominator)*0.2;
+
+
+        telemetry.addData("Case:",wheelState);
+        telemetry.update();
+        prevWheelDebug = wheelDebug;
 
     }
     public void updateFieldOriented(double X, double Y, double RX){

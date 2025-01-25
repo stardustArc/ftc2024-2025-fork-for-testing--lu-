@@ -21,6 +21,10 @@ public class sampleMotors2 {
     boolean hangPos = false;
     boolean prevHangChange = false;
     boolean hangChange = false;
+    boolean pos2 = false;
+    boolean pos3 = false;
+    boolean prevWheelDebug = false;
+    int wheelState = 1;
     public sampleMotors2(HardwareMap map, Telemetry telem) {
         telemetry = telem;
         hardwareMap = map;
@@ -50,9 +54,11 @@ public class sampleMotors2 {
 
 
 
-    public void update (double limitedArmMotorPower, boolean hangTilt,double horizontalPowewr,boolean pos1, boolean pos2, boolean pos3,boolean hangRise,double verticalTest) {
+    public void update (double limitedArmMotorPower, boolean hangTilt,double horizontalPowewr,boolean pos1, boolean pos2, boolean pos3,boolean hangRise,boolean wheelDebug) {
         
         double limit = pulsesPerRev0019 *1;//origional: 4.2
+
+
 
         if(hangTilt && !prevHangChange){
             hangChange = !hangChange;
@@ -60,6 +66,9 @@ public class sampleMotors2 {
         if(hangRise && !prevHangMain){
             hangPos = !hangPos;
         }
+
+
+
 
         if (!hangChange){
             
@@ -77,6 +86,7 @@ public class sampleMotors2 {
         hangMain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         hangMain.setPower(0.9);
 
+
         if (pos1){
             vertical.setTargetPosition(0);
         }
@@ -90,6 +100,8 @@ public class sampleMotors2 {
         vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         vertical.setPower(1);
 
+
+
         if(
                 (-horizontal.getCurrentPosition()<limit && -horizontal.getCurrentPosition() >0) ||
                         ((-horizontal.getCurrentPosition() >= limit && horizontalPowewr<=0) ||
@@ -100,6 +112,7 @@ public class sampleMotors2 {
         
         prevHangChange = hangTilt;
         prevHangMain = hangRise;
+        prevWheelDebug = wheelDebug;
         telemetry.update();
 
     }
