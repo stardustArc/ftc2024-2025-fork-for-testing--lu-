@@ -88,6 +88,8 @@ public class IntoTheDeepTeleOp2 extends LinearOpMode {
         hangTilter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         vertical.setTargetPosition(0);
         hangTilter.setTargetPosition(0);
+        hangMain.setTargetPosition(0);
+        hangMain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         vertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // Retrieve the IMU from the hardware map
         IMU imu = hardwareMap.get(IMU.class, "imu");
@@ -180,7 +182,17 @@ public class IntoTheDeepTeleOp2 extends LinearOpMode {
             }else if(!gamepad2.a){
                 prevClawPos = false;
             }
-
+            if(gamepad2.left_bumper && !prevHangMain){
+                hangPos = !hangPos;
+                if(hangMain.getTargetPosition() == 0){
+                    hangMain.setTargetPosition(-17500);
+                }else{
+                    hangMain.setTargetPosition(0);
+                }
+                prevHangMain = true;
+            }else if(!gamepad2.left_bumper){
+                prevHangMain = false;
+            }
             if(gamepad2.right_bumper && !changed){
                 if(intakeUpDown.getPosition() == 0){
                     intakeUpDown.setPosition(0.2);
@@ -201,12 +213,11 @@ public class IntoTheDeepTeleOp2 extends LinearOpMode {
 
 
 
-            if(false && !prevHangChange){
+            if(gamepad2.dpad_down && !prevHangChange){
                 hangChange = !hangChange;
             }
-            if(gamepad2.left_bumper && !prevHangMain){
-                hangPos = !hangPos;
-            }
+
+
             if (!hangChange){
 
                 hangTilter.setTargetPosition(0);
@@ -215,12 +226,8 @@ public class IntoTheDeepTeleOp2 extends LinearOpMode {
             }
             hangTilter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             hangTilter.setPower(0.9);
-            if (hangPos){
-                hangMain.setTargetPosition(-13500);
-            }else{
-                hangMain.setTargetPosition(0);
-            }
-            hangMain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
             hangMain.setPower(0.9);
 
             if(gamepad2.dpad_up){
@@ -249,8 +256,9 @@ public class IntoTheDeepTeleOp2 extends LinearOpMode {
 
             }
             //prevClawPos = gamepad2.a;
-            prevHangChange = gamepad2.a;
-            prevHangMain = gamepad2.left_bumper;
+            prevHangChange = gamepad2.dpad_down;
+
+
             telemetry.addData("changed",changed);
             telemetry.addData("right bumper",gamepad2.right_bumper);
             telemetry.addData("servopos",intakeUpDown.getPosition());
