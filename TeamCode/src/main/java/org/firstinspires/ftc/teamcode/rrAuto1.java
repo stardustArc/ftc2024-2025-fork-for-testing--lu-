@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 @Config
 @Autonomous(name = "BLUE_TEST_AUTO_PIXEL", group = "Autonomous")
 public class rrAuto1 extends LinearOpMode{
+    public static double WEIRD_TANGENT_THINGY = Math.PI/2;
     /*public DcMotorEx lift;
 
     void liftUp(){
@@ -130,13 +131,13 @@ public class rrAuto1 extends LinearOpMode{
                 .strafeToConstantHeading(new Vector2d(0,-10))
                 .waitSeconds(0.5)
                 //.splineTo(new Vector2d(0,-24),Math.toRadians(0.00));
-               .lineToX(24);
+               .lineToX(22.7);
 
         TrajectoryActionBuilder tab2 = drive.actionBuilder(initialPose)
-                .lineToX(-5
+                .lineToX(-1
                 )
                 .waitSeconds(1)
-                        .splineTo(new Vector2d(0,-60),Math.PI/2);
+                        .splineTo(new Vector2d(-10,-50),WEIRD_TANGENT_THINGY);
                                 //.waitSeconds(1)
                                         //.lineToX(30);
 
