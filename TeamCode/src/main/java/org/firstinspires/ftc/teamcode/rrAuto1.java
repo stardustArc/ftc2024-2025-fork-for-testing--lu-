@@ -92,12 +92,13 @@ public class rrAuto1 extends LinearOpMode{
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
                     lift.setPower(-0.8);
+
                     initialized = true;
                 }
 
                 double pos = lift.getCurrentPosition();
                 packet.put("liftPos", pos);
-                if (pos > 0) {
+                if (pos > 150) {
                     return true;
                 } else {
                     lift.setPower(0);
@@ -117,7 +118,7 @@ public class rrAuto1 extends LinearOpMode{
     public void runOpMode() {
 
         // instantiate your MecanumDrive at a particular pose
-        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(180));
+        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(180.00));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         // make a Claw instance
 
@@ -127,7 +128,7 @@ public class rrAuto1 extends LinearOpMode{
                 //.splineToConstantHeading(new Vector2d(24,-10),Math.PI/2);
                 //.lineToY(-5)
                 .strafeToConstantHeading(new Vector2d(0,-10))
-                .waitSeconds(1)
+                .waitSeconds(0.5)
                 //.splineTo(new Vector2d(0,-24),Math.toRadians(0.00));
                .lineToX(24);
 
@@ -135,16 +136,33 @@ public class rrAuto1 extends LinearOpMode{
                 .lineToX(-5
                 )
                 .waitSeconds(1)
-                        .strafeToConstantHeading(new Vector2d(0,-60))
-                                .waitSeconds(1)
-                                        .lineToX(30);
+                        .splineTo(new Vector2d(0,-60),Math.PI/2);
+                                //.waitSeconds(1)
+                                        //.lineToX(30);
 
-       /* TrajectoryActionBuilder tab3 = drive.actionBuilder(initialPose)
-                .lineToYSplineHeading(33, Math.toRadians(180))
-
-                .waitSeconds(2)
-                .strafeTo(new Vector2d(46, 30))
-                .waitSeconds(3);*/
+       /*TrajectoryActionBuilder tab3 = drive.actionBuilder(initialPose)
+               .splineTo(new Vector2d(-9.11, -34.83), Math.toRadians(88.45))
+               .waitSeconds(1)
+               .splineTo(new Vector2d(-6.10, -45.15), Math.toRadians(-30.83))
+               .waitSeconds(1)
+               .splineTo(new Vector2d(56.42, -60.92), Math.toRadians(0.00))
+               .waitSeconds(1)
+               .splineTo(new Vector2d(3.66, -33.89), Math.toRadians(88.16))
+               .waitSeconds(1)
+               .splineTo(new Vector2d(6.29, -41.21), Math.toRadians(-10.62))
+               .waitSeconds(1)
+               .splineTo(new Vector2d(34.83, -33.89), Math.toRadians(27.76))
+               .waitSeconds(1)
+               .splineTo(new Vector2d(47.22, -13.24), Math.toRadians(-87.73))
+               .waitSeconds(1)
+               .splineTo(new Vector2d(47.41, -42.15), Math.toRadians(266.58))
+               .waitSeconds(1)
+               .splineTo(new Vector2d(47.22, -56.60), Math.toRadians(261.12))
+               .waitSeconds(1)
+               .splineTo(new Vector2d(47.41, -61.49), Math.toRadians(248.20))
+               .waitSeconds(1)
+               .splineTo(new Vector2d(47.78, -64.68), Math.toRadians(194.04));
+        */
         /*Action trajectoryActionCloseOut = tab1.endTrajectory().fresh()
                 .strafeTo(new Vector2d(48, 12))
                 .build(); */
@@ -160,6 +178,7 @@ public class rrAuto1 extends LinearOpMode{
                             //claw.openClaw(),
                             lift.liftDown(),
                             tab2.build()
+                            //tab3.build()
                             //trajectoryActionCloseOut
                     )
             );
