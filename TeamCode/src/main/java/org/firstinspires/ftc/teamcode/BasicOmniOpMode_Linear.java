@@ -27,9 +27,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -64,7 +63,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="Basic: Omni Linear OpMode", group="Linear OpMode")
-@Disabled
+//@Disabled
 public class BasicOmniOpMode_Linear extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
@@ -163,5 +162,18 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
             telemetry.update();
+
+            if (gamepad1.left_bumper){
+                frontLeftDrive.setPower(0.75*frontLeftPower);
+                backLeftDrive.setPower(0.75*backLeftPower);
+                frontRightDrive.setPower(0.75*frontRightPower);
+                backRightDrive.setPower(0.75*backRightPower);
+            } else if (gamepad1.right_bumper) {
+                frontLeftDrive.setPower(0.5 * frontLeftPower);
+                backLeftDrive.setPower(0.5 * backLeftPower);
+                frontRightDrive.setPower(0.5 * frontRightPower);
+                backRightDrive.setPower(0.5 * backRightPower);
+            }
+
         }
     }}
