@@ -106,7 +106,7 @@ public class itdControlsOpMode extends LinearOpMode {
                 frontLeftDrive.setPower(frontLeftPower);
                 backLeftDrive.setPower(backLeftPower);
                 if (gamepad2.dpad_up) {
-                    telemetry.addData("testing",frontLeftPower); //frontLeftPower is a placeholder lol
+                    telemetry.addData("testing",frontLeftPower); //frontLeftPower is a placeholder
                 }
                 frontRightDrive.setPower(frontRightPower);
                 backRightDrive.setPower(backRightPower);
