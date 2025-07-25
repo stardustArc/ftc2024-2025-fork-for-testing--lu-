@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.robotcontroller.external.samples.BasicOmniOpMode_Linear;
 
 
 @TeleOp
@@ -104,14 +106,18 @@ public class itdControlsOpMode extends LinearOpMode {
                 frontLeftDrive.setPower(frontLeftPower);
                 backLeftDrive.setPower(backLeftPower);
                 if (gamepad2.dpad_up) {
-                    //"IN THING";
-                    //intakeUpDown.setPosition(60/360);
+                    telemetry.addData("testing",frontLeftPower);
                 }
                 frontRightDrive.setPower(frontRightPower);
                 backRightDrive.setPower(backRightPower);
 
 
             }
+            // Show the elapsed game time and wheel power.
+            telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
+            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
+            telemetry.addData("Yaw:",imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+            telemetry.update();
 
 
         }
