@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -12,14 +13,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcontroller.external.samples.BasicOmniOpMode_Linear;
 
 @TeleOp
-public class itdControlsV2 extends LinearOpMode {
+public class itdControlsRO extends LinearOpMode {
     public DcMotor frontLeftDrive;
     public DcMotor backLeftDrive;
     public DcMotor frontRightDrive;
     public DcMotor backRightDrive;
-    boolean prevInvert = false;
-    boolean isInvert = false;
-
 
     //speed controls/bumper outputs
     double frontLeftOutput;
@@ -30,8 +28,6 @@ public class itdControlsV2 extends LinearOpMode {
     //default motor speed
     double multiplier;
 
-
-    @Override
     public void runOpMode() throws InterruptedException {
 
         //declaring motors (ID must match DS config)
@@ -39,16 +35,10 @@ public class itdControlsV2 extends LinearOpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left");
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right");
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right");
-        IMU imu = hardwareMap.get(IMU.class, "imu");
 
         // GoBilda motors spin counterclockwise by default, must reverse direction
         frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
-        // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
-        imu.initialize(parameters);
 
         //sets drive motors to run without encoder
         frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -69,54 +59,18 @@ public class itdControlsV2 extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = gamepad1.right_stick_x;
-            if ((gamepad1.left_trigger != 0 && gamepad1.right_trigger != 0) && !prevInvert) {
-                isInvert = !isInvert;
-                prevInvert = true;
-            } else if (!(gamepad1.left_trigger != 0 && gamepad1.right_trigger != 0)) {
-                prevInvert = false;
-            }
-            if (isInvert) {
-                y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
-                x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            } else {
-                y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-                x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            }
+            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+            double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            double lateral = gamepad1.left_stick_x;
+            double yaw = gamepad1.right_stick_x;
 
-            if (gamepad1.a) {
-                imu.resetYaw();
-            }
+            // Combine the joystick requests for each axis-motion to determine each wheel's power.
+            // Set up a variable for each drive wheel to save the power level for telemetry.
+            frontLeftOutput = axial + lateral + yaw;
+            frontRightOutput = axial - lateral - yaw;
+            backLeftOutput = axial - lateral + yaw;
+            backRightOutput = axial + lateral - yaw;
 
-            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
-            // Rotate the movement direction counter to the bot's rotation
-            double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-            double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-
-            rotX = rotX * 1.1;  // Counteract imperfect strafing
-
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio,
-            // but only if at least one is out of the range [-1, 1]
-            /*double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;*/
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio,
-            // but only if at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-            frontLeftOutput = (rotY + rotX + rx) / denominator;
-            backLeftOutput = (rotY - rotX + rx) / denominator;
-            frontRightOutput = (rotY - rotX - rx) / denominator;
-            backRightOutput = (rotY + rotX - rx) / denominator;
-            //not outputting values to motor power, sending to below section for simplified controls
-
-            //(probably) simpler bumper controls, input mecanum output and output power %
             frontLeftDrive.setPower(multiplier * frontLeftOutput);
             backLeftDrive.setPower(multiplier * backLeftOutput);
             frontRightDrive.setPower(multiplier * frontRightOutput);
@@ -138,14 +92,11 @@ public class itdControlsV2 extends LinearOpMode {
 
             } else {
                 multiplier = 0.65; //standard speed
-
             }
             // Show the elapsed game time and wheel power.
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", (frontLeftOutput * multiplier), (frontRightOutput * multiplier));
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", (backLeftOutput * multiplier), (backRightOutput * multiplier));
-            telemetry.addData("Yaw:",imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
             telemetry.update();
-
 
         }
     }

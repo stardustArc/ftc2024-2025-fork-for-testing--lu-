@@ -56,10 +56,10 @@ public class BasicOpMode_Iterative extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor frontLeftDrive = null;
-    private DcMotor backLeftDrive = null;
-    private DcMotor frontRightDrive = null;
-    private DcMotor backRightDrive = null;
+    private DcMotor frontLeftDrive;
+    private DcMotor backLeftDrive;
+    private DcMotor frontRightDrive;
+    private DcMotor backRightDrive;
 
     @Override
     public void init() {
@@ -134,8 +134,20 @@ public class BasicOpMode_Iterative extends OpMode
             telemetry.addData("Status", "Initialized");
             telemetry.update();
 
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-            runtime.reset();
+        //brakes to slow motor/robot down faster
+        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
+
+        runtime.reset();
 
             // run until the end of the match (driver presses STOP)
                 double max;
@@ -158,7 +170,7 @@ public class BasicOpMode_Iterative extends OpMode
                 max = Math.max(max, Math.abs(backLeftPower));
                 max = Math.max(max, Math.abs(backRightPower));
 
-                if (max > 1.0) {
+                if (max > 0.7) {
                     frontLeftPower  /= max;
                     frontRightPower /= max;
                     backLeftPower   /= max;
@@ -195,15 +207,15 @@ public class BasicOpMode_Iterative extends OpMode
                 telemetry.update();
 
                 if (gamepad1.left_bumper){
-                    frontLeftDrive.setPower(0.75*frontLeftPower);
-                    backLeftDrive.setPower(0.75*backLeftPower);
-                    frontRightDrive.setPower(0.75*frontRightPower);
-                    backRightDrive.setPower(0.75*backRightPower);
+                    frontLeftDrive.setPower(0.45*frontLeftPower);
+                    backLeftDrive.setPower(0.45*backLeftPower);
+                    frontRightDrive.setPower(0.45*frontRightPower);
+                    backRightDrive.setPower(0.45*backRightPower);
                 } else if (gamepad1.right_bumper) {
-                    frontLeftDrive.setPower(0.5 * frontLeftPower);
-                    backLeftDrive.setPower(0.5 * backLeftPower);
-                    frontRightDrive.setPower(0.5 * frontRightPower);
-                    backRightDrive.setPower(0.5 * backRightPower);
+                    frontLeftDrive.setPower(1.4 * frontLeftPower);
+                    backLeftDrive.setPower(1.4 * backLeftPower);
+                    frontRightDrive.setPower(1.4 * frontRightPower);
+                    backRightDrive.setPower(1.4 * backRightPower);
                 }
 
             }
