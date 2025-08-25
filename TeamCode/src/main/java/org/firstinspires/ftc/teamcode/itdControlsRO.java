@@ -97,7 +97,6 @@ public class itdControlsRO extends LinearOpMode {
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", (frontLeftOutput * multiplier), (frontRightOutput * multiplier));
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", (backLeftOutput * multiplier), (backRightOutput * multiplier));
             telemetry.update();
-
         }
     }
 }
